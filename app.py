@@ -5,6 +5,7 @@ import datetime
 import random
 import plotly_express as px
 from datetime import datetime, timedelta
+import os
 
 stock_basic = pd.read_csv("data/stock_basic.csv")
 
@@ -46,8 +47,12 @@ def int_to_timestamp(int):
 def get_daily_ratings_of_certain_stocks_in_time_period(stock_names,start_time,end_time,rating_name):
     if rating_name == "强势系数B1":
         file_path = "data/B1_ratings/"
-    else:
+    elif rating_name == "强势系数B2":
         file_path = "data/B2_ratings/"
+    elif rating_name == "强势系数B3":
+        file_path = "data/B3_ratings/"
+    else:
+        file_path = "data/B4_ratings/"
     concatenated_df = pd.DataFrame()
     for stock_name in stock_names:
         ts_code = stock_basic.loc[stock_basic['name']==stock_name]['ts_code'].reset_index(drop=True)[0]
@@ -85,15 +90,29 @@ def get_rating_for_time_period_of_stock(stock_code,start_time,end_time,file_path
     else:
         return 0
 
-def get_B1_B2_of_all_stocks_in_time_period(rating_name,start_time,end_time):
+def get_average_rating_of_all_stocks_in_time_period(rating_name,start_time,end_time):
     if rating_name == "强势系数B1":
         file_path = "data/B1_ratings/"
-    else:
+    elif rating_name == "强势系数B2":
         file_path = "data/B2_ratings/"
+    elif rating_name == "强势系数B3":
+        file_path = "data/B3_ratings/"
+    else:
+        file_path = "data/B4_ratings/"
     stock_ratings_in_time_period = []
-    for stock_code in stock_basic['ts_code']:
+    stock_names = []
+    markets = []
+    industries = []
+    
+    for filename in os.listdir(file_path):
+        stock_code = filename.replace(".csv","")
         stock_ratings_in_time_period.append(get_rating_for_time_period_of_stock(stock_code,start_time,end_time,file_path))
-    return pd.DataFrame({"股票名称":stock_basic['name'],"大盘":stock_basic['market'],"行业":stock_basic['industry'],rating_name:stock_ratings_in_time_period}).sort_values(rating_name,ascending=False)
+        row = stock_basic.loc[stock_basic['ts_code']==stock_code].reset_index(drop=True)
+        stock_names.append(row['name'][0])
+        markets.append(row['market'][0])
+        industries.append(row['industry'][0])
+    
+    return pd.DataFrame({"股票名称":stock_names,"大盘":markets,"行业":industries,rating_name:stock_ratings_in_time_period}).sort_values(rating_name,ascending=False)
 
 #-------------------------------------------------
 
@@ -114,9 +133,12 @@ top_rows_displayed = int(st.text_input("计算出结果后因该显示多少个�
 #b4_index_scale_factor = int(st.text_input("B4大盘涨速放大因子（可参考B4定义文档）",value=1))
 
 with st.spinner("正在计算强势系数。。。"):
-    b1_ratings = get_B1_B2_of_all_stocks_in_time_period("强势系数B1",start_time,end_time)
-    b2_ratings = get_B1_B2_of_all_stocks_in_time_period("强势系数B2",start_time,end_time)
+    b1_ratings = get_average_rating_of_all_stocks_in_time_period("强势系数B1",start_time,end_time)
+    b2_ratings = get_average_rating_of_all_stocks_in_time_period("强势系数B2",start_time,end_time)
     b2_market_1,b2_market_2,b2_market_3,b2_market_4 = split_by_market(b2_ratings)
+    b3_ratings = get_average_rating_of_all_stocks_in_time_period("强势系数B3",start_time,end_time)
+    b4_ratings = get_average_rating_of_all_stocks_in_time_period("强势系数B4",start_time,end_time)
+    b4_market_1,b4_market_2,b4_market_3,b4_market_4 = split_by_market(b4_ratings)
 
 
 
@@ -127,9 +149,8 @@ display_data(b2_market_1,"根据强势系数B2排序的主板股票",top_rows_di
 display_data(b2_market_2,"根据强势系数B2排序的科创板股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed,"强势系数B2")
 display_data(b2_market_3,"根据强势系数B2排序的创业板股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed,"强势系数B2")
 display_data(b2_market_4,"根据强势系数B2排序的北交所股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed,"强势系数B2")
-#display_data(b3_ratings,"根据强势系数B3排序的股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed)
-#display_data(b4_ratings,"根据强势系数B4排序的股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed)
-#display_data(b4_market_1,"根据强势系数B4排序的主板股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed)
-#display_data(b4_market_2,"根据强势系数B4排序的科创板股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed)
-#display_data(b4_market_3,"根据强势系数B4排序的创业板股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed)
-#display_data(b4_market_4,"根据强势系数B4排序的北交所股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed)
+display_data(b3_ratings,"根据强势系数B3排序的股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed,"强势系数B3")
+display_data(b4_ratings,"根据强势系数B4排序的股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed,"强势系数B4")
+display_data(b4_market_1,"根据强势系数B4排序的主板股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed,"强势系数B4")
+display_data(b4_market_2,"根据强势系数B4排序的科创板股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed,"强势系数B4")
+display_data(b4_market_3,"根据强势系数B4排序的创业板股票",top_rows_displayed,1,start_time,end_time,top_rows_displayed,"强势系数B4")
