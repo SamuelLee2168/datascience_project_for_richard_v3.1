@@ -151,7 +151,11 @@ end_time = int(st.text_input("以下输入停止计算强势系数的时间",val
 top_rows_displayed = int(st.text_input("计算出结果后因该显示多少个强势系数最高的股票",value=10))
 specific_stocks_to_display_raw = st.text_input("下面可以添加你特比想关注的股票（空白代表不需要添加。可接受股票代码或者名称。比如说“平安银行”或“000001.SZ”。可以同时选择多个股票，注意用逗号分离。）",value="")
 specific_stocks_to_display = clean_stocks_to_display_input(specific_stocks_to_display_raw)
-filter_incomplete_stocks = not st.checkbox("有些股票会在开始日期之后上市，是否显示后来上市的股票？这些股票会缺失数据，可能会具有更高的强势系数。",False)
+filter_incomplete_stocks_input = st.selectbox("有些股票会在开始日期之后上市，是否显示后来上市的股票？这些股票会缺失数据，可能会具有更高的强势系数。",["显示数据不全的股票","不显示数据不全的股票"],index=1)
+if filter_incomplete_stocks_input == "显示数据不全的股票":
+    filter_incomplete_stocks = False
+else:
+    filter_incomplete_stocks = True
 #b1_ma_days = int(st.text_input("B1使用的均线天数（可参考B1公式）",value=5))
 #b2_ma_days = int(st.text_input("B2使用的均线天数（可参考B2公式）",value=5))
 #b3_time_segment = int(st.text_input("B3涨速时段时长（可参考B3定义文档）",value=5))
