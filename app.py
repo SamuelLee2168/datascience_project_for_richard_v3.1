@@ -13,7 +13,7 @@ stock_basic = pd.read_csv("data/stock_basic.csv")
 #-----------------------
 #@st.cache_data(show_spinner=False)
 def get_data_of_rating(file_path):
-    return pd.read_csv(file_path)
+    return pd.read_csv(file_path).reset_index(drop=True)
 
 #@st.cache_data(show_spinner=False)
 def combine_rating_data(file_path):
