@@ -10,7 +10,6 @@ import os
 stock_basic = pd.read_csv("data/stock_basic.csv")
 
 
-
 #-----------------------
 #@st.cache_data(show_spinner=False)
 def get_data_of_rating(file_path):
@@ -40,7 +39,7 @@ def split_by_market(df):
     return market_1,market_2,market_3,market_4
 
 def display_table(df):
-    st.dataframe(df, hide_index=True)
+    st.dataframe(df)
     
 def int_to_timestamp(int):
     return pd.to_datetime(int, format='%Y%m%d')
