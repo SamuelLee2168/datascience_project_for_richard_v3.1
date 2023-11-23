@@ -12,23 +12,23 @@ stock_basic = pd.read_csv("data/stock_basic.csv")
 
 
 #-----------------------
-@st.cache_data(show_spinner=False)
+#@st.cache_data(show_spinner=False)
 def get_data_of_rating(file_path):
     return pd.read_csv(file_path)
 
-@st.cache_data(show_spinner=False)
+#@st.cache_data(show_spinner=False)
 def combine_rating_data(file_path):
     dfs = []
     for file_name in os.listdir(file_path):
         dfs.append(pd.read_csv(file_path+file_name))
     return pd.concat(dfs)
 
-all_b1_rating_data = combine_rating_data("data/B1_ratings/")
-all_b2_rating_data = combine_rating_data("data/B2_ratings/")
-all_b3_rating_data = combine_rating_data("data/B3_ratings/")
-all_b4_rating_data = combine_rating_data("data/B4_ratings/")
-print(f"b3 len is {all_b3_rating_data.shape[0]}")
-print(f"b4 len is {all_b4_rating_data.shape[0]}")
+#all_b1_rating_data = combine_rating_data("data/B1_ratings/")
+#all_b2_rating_data = combine_rating_data("data/B2_ratings/")
+#all_b3_rating_data = combine_rating_data("data/B3_ratings/")
+#all_b4_rating_data = combine_rating_data("data/B4_ratings/")
+#print(f"b3 len is {all_b3_rating_data.shape[0]}")
+#print(f"b4 len is {all_b4_rating_data.shape[0]}")
 
 #------------------------
 
@@ -47,13 +47,13 @@ def int_to_timestamp(int):
 
 def get_df_for_plotting(stock_names,start_time,end_time,rating_name):
     if rating_name == "强势系数B1":
-        total_rating_df = all_b1_rating_data
+        total_rating_df = combine_rating_data("data/B1_ratings/")
     elif rating_name == "强势系数B2":
-        total_rating_df = all_b2_rating_data
+        total_rating_df = combine_rating_data("data/B2_ratings/")
     elif rating_name == "强势系数B3":
-        total_rating_df = all_b3_rating_data
+        total_rating_df = combine_rating_data("data/B3_ratings/")
     else:
-        total_rating_df = all_b4_rating_data
+        total_rating_df = combine_rating_data("data/B4_ratings/")
 
     output_df = total_rating_df.loc[total_rating_df['date']>start_time]
     output_df = output_df.loc[output_df['date']<end_time]
@@ -89,13 +89,13 @@ def get_stocks_with_incomplete_data(rating_data,start_time):
 
 def get_average_rating_of_all_stocks_in_time_period(rating_name,start_time,end_time,filter_incomplete_stocks):
     if rating_name == "强势系数B1":
-        raw_rating_data = all_b1_rating_data
+        raw_rating_data = combine_rating_data("data/B1_ratings/")
     elif rating_name == "强势系数B2":
-        raw_rating_data = all_b2_rating_data
+        raw_rating_data = combine_rating_data("data/B2_ratings/")
     elif rating_name == "强势系数B3":
-        raw_rating_data = all_b3_rating_data
+        raw_rating_data = combine_rating_data("data/B3_ratings/")
     else:
-        raw_rating_data = all_b4_rating_data
+        raw_rating_data = combine_rating_data("data/B4_ratings/")
     
     output_df = raw_rating_data.loc[raw_rating_data['date']>start_time]
     output_df = output_df.loc[output_df['date']<end_time]
