@@ -47,15 +47,15 @@ def int_to_timestamp(int):
 
 def get_df_for_plotting(stock_names,start_time,end_time,rating_name):
     if rating_name == "强势系数B1":
-        total_rating_df = combine_rating_data("data/B1_ratings/")
+        output_df = combine_rating_data("data/B1_ratings/")
     elif rating_name == "强势系数B2":
-        total_rating_df = combine_rating_data("data/B2_ratings/")
+        output_df = combine_rating_data("data/B2_ratings/")
     elif rating_name == "强势系数B3":
-        total_rating_df = combine_rating_data("data/B3_ratings/")
+        output_df = combine_rating_data("data/B3_ratings/")
     else:
-        total_rating_df = combine_rating_data("data/B4_ratings/")
+        output_df = combine_rating_data("data/B4_ratings/")
 
-    output_df = total_rating_df.loc[total_rating_df['date']>start_time]
+    output_df = output_df.loc[output_df['date']>start_time]
     output_df = output_df.loc[output_df['date']<end_time]
     output_df = pd.merge(output_df, stock_basic, on='ts_code', how='left')[['name','date','rating']]
     output_df = output_df.loc[output_df['name'].isin(stock_names)]
@@ -89,20 +89,20 @@ def get_stocks_with_incomplete_data(rating_data,start_time):
 
 def get_average_rating_of_all_stocks_in_time_period(rating_name,start_time,end_time,filter_incomplete_stocks):
     if rating_name == "强势系数B1":
-        raw_rating_data = combine_rating_data("data/B1_ratings/")
+        output_df = combine_rating_data("data/B1_ratings/")
     elif rating_name == "强势系数B2":
-        raw_rating_data = combine_rating_data("data/B2_ratings/")
+        output_df = combine_rating_data("data/B2_ratings/")
     elif rating_name == "强势系数B3":
-        raw_rating_data = combine_rating_data("data/B3_ratings/")
+        output_df = combine_rating_data("data/B3_ratings/")
     else:
-        raw_rating_data = combine_rating_data("data/B4_ratings/")
+        output_df = combine_rating_data("data/B4_ratings/")
     
-    output_df = raw_rating_data.loc[raw_rating_data['date']>start_time]
-    output_df = output_df.loc[output_df['date']<end_time]
-
     if filter_incomplete_stocks:
-        incomplete_stocks = get_stocks_with_incomplete_data(raw_rating_data,start_time)
+        incomplete_stocks = get_stocks_with_incomplete_data(output_df,start_time)
         output_df = output_df.loc[~output_df['ts_code'].isin(incomplete_stocks)]
+
+    output_df = output_df.loc[output_df['date']>start_time]
+    output_df = output_df.loc[output_df['date']<end_time]
 
     output_df = output_df.groupby('ts_code').mean()['rating'].reset_index()
     output_df = pd.merge(output_df, stock_basic, on='ts_code', how='left')[['name','market','industry','list_date','rating']]
